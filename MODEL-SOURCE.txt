@@ -1,0 +1,11 @@
+Starry Night pretrained style-transfer model
+Authors: Justin Johnson, Alexandre Alahi, Li Fei-Fei (ECCV 2016).
+Project: https://github.com/jcjohnson/fast-neural-style
+Model: https://cs.stanford.edu/people/jcjohns/fast-neural-style/models/eccv16/starry_night.t7
+Reference implementation for OpenCV: https://github.com/opencv/opencv/blob/3.4/samples/dnn/fast_neural_style.py
+
+Usage terms stated in the source project's README:
+"Free for personal or research use; for commercial use please contact me."
+
+The model runs locally. It transfers a fixed Starry Night-inspired style;
+it is not a text-to-image or arbitrary-reference painting model.

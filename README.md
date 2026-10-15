@@ -11,8 +11,8 @@ Onceki pencereyi kapatip `run_app.bat` dosyasini acin. Baslik 8.0 olmalidir.
 1. `Fotograf ac` ile fotografi secin.
 2. Varsayilan Referansli yagli boya stilini kullanin.
 3. `Referans tablo sec` ile begendiginiz yagli boya resmini secin.
-   Projedeki referans_yagli_boya_portre.png baslangic referansidir; asil
-   istediginiz tabloyu secerek degistirebilirsiniz.
+   Uygulamayla birlikte referans gorseli dagitilmaz; kendi referans tablonuzu
+   secmeniz gerekir.
 4. Firca boyutu, detay ve boya yogunlugunu duzenleyin. Varsayilan ayarlar
    referans stilini daha ince firca olceginde ve hafif kaynak karisimiyla
    uygular; boya dokusunu korurken sert firca izlerini yumusatir, doygunluk ve
@@ -32,7 +32,6 @@ API anahtari, kredi ve donusturme sirasinda internet gerekmez. Bu bir yerel stil
 aktarimidir; sohbette uretilen portreyle ayni uretken model veya kalite garantisi degildir.
 Sonucun kalitesi fotograf ve referansla birlikte degerlendirilmelidir.
 768 pikselden buyuk fotograf kucultulerek islenip orijinal boyuta geri getirilir.
-`local_reference_comparison.png` yerel modelin ornek fotograf karsilastirmasidir.
 Portre, Dengeli ve Belirgin firca; katmanli raster firca darbelerini kullanir.
 Klasik tablo, bilgisayardaki sabit Van Gogh stil aktarim modelini kullanir.
 Kaynak ve MIT lisansi: https://github.com/EndyWon/MicroAST
@@ -46,7 +45,7 @@ Bu bilgisayarda modeller ve kutuphaneler hazirdir.
 ```powershell
 pip install -r requirements.txt
 python main.py
-python main.py input.jpg output.png
+python main.py input.jpg output.png --style brush
 python main.py input.jpg output.png --style classical
 python main.py input.jpg output.png --style reference --reference tablo.jpg
 ```
@@ -61,11 +60,17 @@ Model dosyalarini uygulamayla ayni klasorde tutun:
 
 - `face_detection_yunet_2023mar.onnx`: yerel yuz bulma.
 - `haarcascade_frontalface_default.xml`: yedek yuz bulma.
-- `starry_night.t7`: Klasik tablo modeli.
+- `starry_night.t7`: Klasik tablo modeli. GitHub deposuna eklenmez. Klasik
+  tablo stilini kullanmak icin dosyayi resmi kaynaktan indirip uygulama
+  klasorune kendiniz ekleyin:
+  https://cs.stanford.edu/people/jcjohns/fast-neural-style/models/eccv16/starry_night.t7
 
 Model kaynaklari ve kullanim kosullari `MODEL-SOURCE.txt` ve
 `LICENSE-YUNET.txt` dosyalarindadir. Sabit stil modelinin ticari kullanimi icin
 model yazarindan izin alinmasi gerekir.
+
+Fotograflar, referans tablolar ve uretilen onizlemeler Git disinda tutulur;
+GitHub deposuna eklenmez.
 
 ```powershell
 python -m unittest test_app test_reference -v

@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.bmp
+*.tif
+*.tiff
+starry_night.t7
