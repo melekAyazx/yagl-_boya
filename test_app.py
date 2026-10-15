@@ -168,20 +168,31 @@ class LocalOperationTests(unittest.TestCase):
         with patch.object(sys, "argv", ["main.py"]):
             args = parse_args()
         self.assertEqual(args.style, "reference")
-        self.assertEqual(args.brush, 70)
-        self.assertEqual(args.smoothness, 0.96)
-        self.assertEqual(args.detail, 0.8)
+        self.assertEqual(args.brush, 115)
+        self.assertEqual(args.smoothness, 1.0)
+        self.assertEqual(args.detail, 0.7)
         self.assertEqual(args.saturation, 1.0)
         self.assertEqual(args.contrast, 1.0)
+        self.assertEqual(args.texture, 0.11)
 
     def test_reference_preset_defaults_to_refined_painterly_transfer(self):
         brush, strength, detail, saturation, contrast, texture = PRESETS[REFERENCE_PRESET]
-        self.assertEqual(strength, 0.96)
-        self.assertEqual(detail, 0.8)
-        self.assertEqual(brush, 70)
+        self.assertEqual(strength, 1.0)
+        self.assertEqual(detail, 0.7)
+        self.assertEqual(brush, 115)
+        self.assertEqual(texture, 0.11)
         self.assertEqual(saturation, 1.0)
         self.assertEqual(contrast, 1.0)
-        self.assertEqual(texture, 0.02)
+
+    def test_reference_preset_without_reference_falls_back_to_brush_painting(self):
+        yy, xx = np.mgrid[:120, :160]
+        source = np.stack((40 + xx * 0.7, 35 + yy * 0.8, 150 - xx * 0.3), axis=2).astype(np.uint8)
+        options = dict(sigma_s=70, sigma_r=0.96, saturation=1, contrast=1,
+                       canvas_strength=0, detail=0.8, preserve_colors=True)
+        automatic = create_oil_painting(source, engine="reference", reference=None, **options)
+        brush = create_oil_painting(source, engine="brush", **options)
+        np.testing.assert_array_equal(automatic, brush)
+        self.assertGreater(float(np.abs(automatic.astype(float) - source).mean()), 2.5)
 
     def test_conversion_and_save_with_network_disabled(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -192,7 +203,7 @@ class LocalOperationTests(unittest.TestCase):
             write_image(source, image)
             with patch("socket.socket.connect", side_effect=AssertionError("Network must not be used")), \
                  patch.dict("os.environ", {"OPENAI_API_KEY": ""}), \
-                 patch.object(sys, "argv", ["main.py", str(source), str(destination), "--style", "brush"]):
+                 patch.object(sys, "argv", ["main.py", str(source), str(destination)]):
                 self.assertEqual(main(), 0)
             self.assertEqual(read_image(destination).shape, image.shape)
 
@@ -203,6 +214,7 @@ class InterfaceTests(unittest.TestCase):
         try:
             app = OilPaintingApp(root)
             self.assertEqual(app.preset.get(), REFERENCE_PRESET)
+            self.assertIsNone(app.reference)
             self.assertTrue(app.preserve_colors.get())
             self.assertFalse(hasattr(app, "api_key"))
             self.assertNotIn("Yapay", " ".join(app.preset_menu["values"]))

@@ -10,13 +10,14 @@ Onceki pencereyi kapatip `run_app.bat` dosyasini acin. Baslik 8.0 olmalidir.
 
 1. `Fotograf ac` ile fotografi secin.
 2. Varsayilan Referansli yagli boya stilini kullanin.
-3. `Referans tablo sec` ile begendiginiz yagli boya resmini secin.
-   Uygulamayla birlikte referans gorseli dagitilmaz; kendi referans tablonuzu
-   secmeniz gerekir.
+3. Referans tablo secmek istege baglidir. Bir tablo secmezseniz uygulama
+   fotografi firca darbeli yerel yagli boya motoruyla donusturur. Referans
+   secerseniz referans tablosunun stili fotografa aktarilir.
 4. Firca boyutu, detay ve boya yogunlugunu duzenleyin. Varsayilan ayarlar
-   referans stilini daha ince firca olceginde ve hafif kaynak karisimiyla
-   uygular; boya dokusunu korurken sert firca izlerini yumusatir, doygunluk ve
-   kontrasti yapay bicimde yukseltmez. `Fotograf
+   daha iri, belirgin katmanli firca darbeleri ve gorunur tuval dokusu kullanir;
+   detay koruma 0.70'e cikarildi; yuz ve ince cizgiler daha belirgin kalirken
+   firca izleri de korunur. Doygunluk ve kontrast yapay bicimde yukseltilemez.
+   `Fotograf
    renklerini koru` varsayilan olarak aciktir; kaynak fotografin renk ve
    parlaklik tonlarini buyuk olcude korur. Detay koruma yuzu ve ince cizgileri
    daha belirgin tutar. Daha stilize gorunum icin Boya yogunlugunu artirin;
@@ -47,6 +48,7 @@ pip install -r requirements.txt
 python main.py
 python main.py input.jpg output.png --style brush
 python main.py input.jpg output.png --style classical
+python main.py input.jpg output.png
 python main.py input.jpg output.png --style reference --reference tablo.jpg
 ```
 

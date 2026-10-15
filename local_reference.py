@@ -57,7 +57,7 @@ def vertical_content_bounds(image):
 
 def render_reference(image, reference, strength=0.85, detail=0.7, preserve_colors=False, style_size=512):
     if reference is None:
-        raise ValueError("Bir yagli boya referansi secin.")
+        raise ValueError("Bir referans gorseli olmadan stil aktarimi yapilamaz.")
     strength = float(np.clip(strength, 0, 1))
     if strength == 0:
         return image.copy()

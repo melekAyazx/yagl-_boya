@@ -17,7 +17,7 @@ from local_reference import render_reference
 APP_TITLE = "Ya\u011fl\u0131 Boya At\u00f6lyesi 8.0"
 REFERENCE_PRESET = "Referansl\u0131 ya\u011fl\u0131 boya"
 PRESETS = {
-    REFERENCE_PRESET: (70, 0.96, 0.8, 1.0, 1.0, 0.02),
+    REFERENCE_PRESET: (115, 1.0, 0.7, 1.0, 1.0, 0.11),
     "Klasik tablo": (85, 0.95, 0.6, 1.04, 1.0, 0.035),
     "Dengeli": (95, 1.0, 0.55, 1.1, 1.0, 0.06),
     "Portre": (75, 1.0, 0.95, 1.06, 1.0, 0.04),
@@ -40,8 +40,8 @@ def write_image(path: Path, image: np.ndarray) -> None:
     buffer.tofile(str(path))
 
 
-def create_oil_painting(image, sigma_s=75, sigma_r=1.0, saturation=1.06,
-                       contrast=1.0, canvas_strength=0.04, detail=0.95,
+def create_oil_painting(image, sigma_s=115, sigma_r=1.0, saturation=1.0,
+                       contrast=1.0, canvas_strength=0.11, detail=0.7,
                        engine="brush", preserve_colors=True, reference=None):
     if engine not in ("brush", "classical", "reference"):
         raise ValueError("Bilinmeyen donusturme yontemi")
@@ -53,6 +53,8 @@ def create_oil_painting(image, sigma_s=75, sigma_r=1.0, saturation=1.06,
         painted = work.astype(np.float32) / 255
     elif engine == "classical":
         painted = render_classical(work, sigma_s, float(np.clip(detail, 0, 1)), preserve_colors)
+    elif engine == "reference" and reference is None:
+        painted = render_strokes(work, float(np.clip(sigma_s, 10, 200)), float(np.clip(detail, 0, 1)))
     elif engine == "reference":
         style_size = int(np.clip(512 * 85 / max(10, sigma_s), 256, 768))
         painted = render_reference(work, reference, 1.0, detail, preserve_colors, style_size).astype(np.float32) / 255
@@ -137,18 +139,11 @@ class OilPaintingApp:
         self.metadata = tk.StringVar(value="")
         self.preset = tk.StringVar(value=REFERENCE_PRESET)
         self.reference = None
-        self.reference_name = tk.StringVar(value="Referans se\u00e7ilmedi")
+        self.reference_name = tk.StringVar(value="Otomatik stil (referans iste\u011fe ba\u011fl\u0131)")
         self.preserve_colors = tk.BooleanVar(value=True)
         self.values = [tk.DoubleVar(value=value) for value in PRESETS[REFERENCE_PRESET]]
         self.configure_styles()
         self.build_ui()
-        reference_path = Path(__file__).with_name("referans_yagli_boya_portre.png")
-        if reference_path.is_file():
-            try:
-                self.reference = read_image(reference_path)
-                self.reference_name.set(reference_path.name)
-            except Exception:
-                pass
         self.update_mode()
         self.poll_id = root.after(100, self.poll_worker)
         root.bind("<Destroy>", self.on_destroy, add="+")
@@ -296,9 +291,6 @@ class OilPaintingApp:
     def process_image(self):
         if self.original is None or self.busy:
             return
-        if self.preset.get() == REFERENCE_PRESET and self.reference is None:
-            messagebox.showinfo(APP_TITLE, "\u00d6nce bir ya\u011fl\u0131 boya referans\u0131 se\u00e7in.")
-            return
         self.busy = True
         self.status.set("Tablo olu\u015fturuluyor...")
         self.progress.start(12)
@@ -376,12 +368,12 @@ def parse_args():
     parser.add_argument("--reference", type=Path)
     parser.add_argument("--preserve-colors", action="store_true")
     parser.add_argument("--style-colors", action="store_true", help="Klasik tablonun renk paletini kullan")
-    parser.add_argument("--brush", type=float, default=70)
-    parser.add_argument("--smoothness", type=float, default=0.96, help="Boya yogunlugu: 0-1")
-    parser.add_argument("--detail", type=float, default=0.8, help="Detay koruma: 0-1")
+    parser.add_argument("--brush", type=float, default=115)
+    parser.add_argument("--smoothness", type=float, default=1.0, help="Boya yogunlugu: 0-1")
+    parser.add_argument("--detail", type=float, default=0.7, help="Detay koruma: 0-1")
     parser.add_argument("--saturation", type=float, default=1.0)
     parser.add_argument("--contrast", type=float, default=1.0)
-    parser.add_argument("--texture", type=float, default=0.025)
+    parser.add_argument("--texture", type=float, default=0.11)
     return parser.parse_args()
 
 

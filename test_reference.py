@@ -93,9 +93,9 @@ class ReferenceTests(unittest.TestCase):
         with patch("local_reference.load_model", side_effect=AssertionError("Model must not run")):
             np.testing.assert_array_equal(render_reference(image, image, strength=0), image)
 
-    def test_missing_reference_is_clear(self):
-        with self.assertRaisesRegex(ValueError, "referansi"):
-            render_reference(np.full((50, 70, 3), 120, dtype=np.uint8), None)
+    def test_missing_reference_is_rejected_by_reference_only_renderer(self):
+        with self.assertRaisesRegex(ValueError, "referans"):
+            render_reference(sample_portrait(), None, detail=0, preserve_colors=True)
 
 
 class ReferenceInterfaceTests(unittest.TestCase):

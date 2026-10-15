@@ -85,7 +85,9 @@ def brush_stamp(radius, angle_index, fine=False):
     fringe = np.sin(across * 2.3 + np.sin(across * 0.7)) * 0.055
     alpha = np.clip((1 - distance + fringe) * 5, 0, 1) * 0.92
     bristles = np.sin(across * 2.8 + np.sin(across * 1.3))
-    relief = bristles * 0.018 + np.clip(-across / radius, -1, 1) * 0.014
+    grooves = 0.78 + 0.22 * (0.5 + 0.5 * bristles)
+    alpha *= grooves
+    relief = bristles * 0.045 + np.clip(-across / radius, -1, 1) * 0.025
     return alpha[..., None], relief[..., None], extent
 
 
@@ -99,7 +101,8 @@ def paint_mark(canvas, reference, y, x, stamp, rng, importance=None):
     opacity = alpha[slices]
     if importance is not None:
         opacity = opacity * importance[top:bottom, left:right, None]
-    color = reference[y, x] + float(rng.normal(0, 0.003 if importance is not None else 0.007))
+    pigment_variation = 0.003 if importance is not None else 0.01
+    color = reference[y, x] + rng.normal(0, pigment_variation, 3).astype(np.float32)
     paint = np.clip(color + relief[slices] * (0.35 if importance is not None else 1), 0, 1)
     region = canvas[top:bottom, left:right]
     region[:] = region * (1 - opacity) + paint * opacity
